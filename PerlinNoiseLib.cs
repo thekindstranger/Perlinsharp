@@ -65,11 +65,81 @@ public class Grid
 
     //Actual generator function, z value has default to avoid making an overload for 3D grid
     public float GetValue(float _x, float _y, float _z = 0){
-        
+        if (thirdDimension){
+            return ThreeDGenerate(_x, _y, _z);
+        }else{
+            return TwoDGenerate(_x, _y);
+        }
     }
 
-    private float interp(float valueOne, float valueTwo, float weight){
+    private float TwoDGenerate(float xA, float yA){
+        //Find pos inside grid square
+        float relativePosX = xA % sizeX;
+        float relativePosY = yA % sizeY;
+        Vector relativeVect = new Vector(relativePosX, relativePosY);
+
+        //Find square's pos on grid
+        float leftLine = xA - relativePosX;
+        float bottomLine = yA - relativePosY;
+        float topLine = bottomLine + sizeY;
+        float rightLine = leftLine + sizeX;
+
+        //Find random vects at grid corners
+        Vector topLeftVect = FindCornerVect(leftLine, topLine);
+        Vector bottomLeftVect = FindCornerVect(leftLine, bottomLine);
+        Vector topRightVect = FindCornerVect(rightLine, topLine);
+        Vector bottomRightVect = FindCornerVect(rightLine, bottomLine);
+
+        //Define vects from corner to point
+        Vector vectToTopLeft = new Vector(sizeX - relativePosX, relativePosY);
+        Vector vectToBottomLeft = relativeVect;
+        Vector vectToTopRight = new Vector(sizeX - relativePosX, sizeY - relativePosY);
+        Vector vectToBottomRight = new Vector(relativePosX, sizeY - relativePosY);
+
+        //Generate random values
+        float topLeftVal = Vector.Dot(topLeftVect, vectToTopLeft);
+        float bottomLeftVal = Vector.Dot(bottomLeftVect, vectToBottomLeft);
+        float topRightVal = Vector.Dot(topRightVect, vectToTopRight);
+        float bottomRightVal = Vector.Dot(bottomRightVect, vectToBottomRight);
+
+        //Interpolate the values using the pos as weight, generating the final value
+        float topVal = Interp(topLeftVal, topRightVal, relativePosX);
+        float bottomVal = Interp(bottomLeftVal, bottomRightVal, relativePosX);
+
+        return Interp(bottomVal, topVal, relativePosY);
+    }
+
+    private float ThreeDGenerate(float xA, float yA, float zA){
+
+    }
+
+    private float Interp(float valueOne, float valueTwo, float weight){
         return (valueTwo - valueOne) * weight + valueOne;
+    }
+
+    //This paring function will combine the coords of the intersections of our grid, so we can set the seed for the rng and get consistent output for each seed
+    private int Pair(int numA, int numB){
+        return ((numA * numA) + (numA * 3) + (2 * (numA + numB)) + numB + (numB * numB)) / 2;
+    }
+
+    private Vector FindCornerVect(float coordX, float coordY, float coordZ = 0){
+        int xIntersectionNumber = coordX % sizeX;
+        int yIntersectionNumber = coordY % sizeY;
+        if(this.thirdDimension){
+            int zIntersectionNumber = coordZ % sizeZ;
+
+            int _seed = Pair(zIntersectionNumber, Pair(xIntersectionNumber, yIntersectionNumber)) + seed;
+            rng = new random(_seed);
+
+            int vectNum = rng.Next(directions.Count());
+            return directions[vectNum];
+        }else{
+            int _seed = Pair(xIntersectionNumber, yIntersectionNumber) + seed;
+            rng = new random(_seed);
+
+            int vectNum = rng.Next(directions.Count());
+            return directions[vectNum];
+        }
     }
 }
 
