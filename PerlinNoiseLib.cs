@@ -1,8 +1,9 @@
+using System;
+using System.Collections.Generic;
+
 public class Grid
 {
     //This class will generate and contain the grid, and output "random" values when given a position on the grid
-    using System;
-    using System.Collections.Generic:
 
     private float sizeX = 1f;
     private float sizeY = 1f;
@@ -12,7 +13,7 @@ public class Grid
     public bool thirdDimension;
 
     //This dict will determine the directions the corners of our grid can have
-    private List<Vector> directions = new List<Vector>;
+    private List<Vector> directions = new List<Vector>();
 
     //Base constructor will set up the grid with a random seed, overload allows for setting the seed
     public Grid(bool hasThirdDimension, Vector[] vects = null){
@@ -53,14 +54,13 @@ public class Grid
     }
 
     //This method will allow setting a custom grid size
-    public SetSize(float _sizeX, float _sizeY){
+    public SetSize(float _sizeX, float _sizeY, float _sizeZ = 0){
         this.sizeX = _sizeX;
         this.sizeY = _sizeY;
-    }
 
-    //Overload to allow for setting the third dimension
-    public SetSize(float _sizeZ) : SetSize(_sizeX, _sizeY){
-        this.sizeZ = _sizeZ;
+        if (this.thirdDimension){
+            this.sizeZ = _sizeZ;
+        }
     }
 
     //Actual generator function, z value has default to avoid making an overload for 3D grid
@@ -77,7 +77,7 @@ public struct Vector
 {
     public float x;
     public float y;
-    public float z;
+    public float z = 0;
 
     private bool isThreeDimensional = false;
 
@@ -105,4 +105,6 @@ public struct Vector
             return (vectOne.x * vectTwo.x) + (vectOne.y * vectTwo.y);
         }
     }
+
+    public static Vector operator -(Vector a, Vector b) => new Vector(a.x - b.x, a.y - b.y, a.z - b.z);
 }
