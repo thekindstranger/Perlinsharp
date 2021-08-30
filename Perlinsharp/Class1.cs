@@ -91,10 +91,10 @@ public class Grid
         Vector bottomRightVect = FindCornerVect(rightLine, bottomLine);
 
         //Define vects from corner to point
-        Vector vectToTopLeft = new Vector(sizeX - relativePosX, relativePosY);
+        Vector vectToTopLeft = new Vector(relativePosX, sizeY - relativePosY);
         Vector vectToBottomLeft = relativeVect;
         Vector vectToTopRight = new Vector(sizeX - relativePosX, sizeY - relativePosY);
-        Vector vectToBottomRight = new Vector(relativePosX, sizeY - relativePosY);
+        Vector vectToBottomRight = new Vector(sizeX - relativePosX, relativePosY);
 
         //Generate random values
         float topLeftVal = Vector.Dot(topLeftVect, vectToTopLeft);
@@ -110,7 +110,63 @@ public class Grid
     }
 
     private float ThreeDGenerate(float xA, float yA, float zA){
-        throw new NotImplementedException();
+        //Find pos inside grid square
+        float relativePosX = xA % sizeX;
+        float relativePosY = yA % sizeY;
+        float relativePosZ = zA % sizeZ;
+        Vector relativeVect = new Vector(relativePosX, relativePosY, relativePosZ);
+
+        //Find square's pos on grid
+        float leftLine = xA - relativePosX;
+        float bottomLine = yA - relativePosY;
+        float frontLine = zA - relativePosZ;
+        float topLine = bottomLine + sizeY;
+        float rightLine = leftLine + sizeX;
+        float backLine = frontLine + sizeZ;
+
+        //Find random vects at grid corners
+        Vector topLeftBackVect = FindCornerVect(leftLine, topLine, backLine);
+        Vector bottomLeftBackVect = FindCornerVect(leftLine, bottomLine, backLine);
+        Vector topRightBackVect = FindCornerVect(rightLine, topLine, backLine);
+        Vector bottomRightBackVect = FindCornerVect(rightLine, bottomLine, backLine);
+
+        Vector topLeftFrontVEct = FindCornerVect(leftLine, topLine, frontLine);
+        Vector bottomLeftFrontVect = FindCornerVect(leftLine, bottomLine, frontLine);
+        Vector topRightFrontVect = FindCornerVect(rightLine, topLine, frontLine);
+        Vector bottomRightFrontVect = FindCornerVect(rightLine, bottomLine, frontLine);
+
+        //Define vects from corner to point
+        Vector vectToTopLeftBack = new Vector(relativePosX, sizeY - relativePosY, sizeZ - relativePosZ);
+        Vector vectToBottomLeftBack = (relativePosX, relativePosY, sizeZ - relativePosZ);
+        Vector vectToTopRightBack = new Vector(sizeX - relativePosX, sizeY - relativePosY, sizeZ - relativePosZ);
+        Vector vectToBottomRightBack = new Vector(sizeX - relativePosX, relativePosY, sizeZ - relativePosZ);
+
+        Vector vectToTopLeftFront = new Vector(relativePosX, sizeY - relativePosY, relativePosZ);
+        Vector vectToBottomLeftFront = (relativePosX, relativePosY, relativePosZ);
+        Vector vectToTopRightFront = new Vector(sizeX - relativePosX, sizeY - relativePosY, relativePosZ);
+        Vector vectToBottomRightFront = new Vector(sizeX - relativePosX, relativePosY, relativePosZ);
+
+        //Generate random values
+        float topLeftBackVal = Vector.Dot(topLeftBackVect, vectToTopLeftBack);
+        float bottomLeftBackVal = Vector.Dot(bottomLeftBackVect, vectToBottomLeftBack);
+        float topRightBackVal = Vector.Dot(topRightBackVect, vectToTopRightBack);
+        float bottomRightBackVal = Vector.Dot(bottomRightBackVect, vectToBottomRightBack);
+
+        float topLeftFrontVal = Vector.Dot(topLeftFrontVect, vectToTopLeftFront);
+        float bottomLeftFrontVal = Vector.Dot(bottomLeftFrontVect, vectToBottomLeftFront);
+        float topRightFrontVal = Vector.Dot(topRightFrontVect, vectToTopRightFront);
+        float bottomRightFrontVal = Vector.Dot(bottomRightFrontVect, vectToBottomRightFront);
+
+        //Interpolate the values using the pos as weight, generating the final value
+        float topBackVal = Interp(topLeftBackVal, topRightBackVal, relativePosX);
+        float bottomBackVal = Interp(bottomLeftBackVal, bottomRightBackVal, relativePosX);
+        float backVal = Interp(bottomBackVal, topBackVal, relativePosY);
+
+        float topFrontVal = Interp(topLeftFrontVal, topRightFrontVal, relativePosX);
+        float bottomFrontVal = Interp(bottomLeftFrontVal, bottomRightFrontVal, relativePosX);
+        float frontVal = Interp(bottomBackVal, topBackVal, relativePosY);
+
+        return Interp(frontVal, backVal, relativePosZ);
     }
 
     private float Interp(float valueOne, float valueTwo, float weight){
