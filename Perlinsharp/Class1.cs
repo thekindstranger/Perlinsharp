@@ -130,19 +130,19 @@ public class Grid
         Vector topRightBackVect = FindCornerVect(rightLine, topLine, backLine);
         Vector bottomRightBackVect = FindCornerVect(rightLine, bottomLine, backLine);
 
-        Vector topLeftFrontVEct = FindCornerVect(leftLine, topLine, frontLine);
+        Vector topLeftFrontVect = FindCornerVect(leftLine, topLine, frontLine);
         Vector bottomLeftFrontVect = FindCornerVect(leftLine, bottomLine, frontLine);
         Vector topRightFrontVect = FindCornerVect(rightLine, topLine, frontLine);
         Vector bottomRightFrontVect = FindCornerVect(rightLine, bottomLine, frontLine);
 
         //Define vects from corner to point
         Vector vectToTopLeftBack = new Vector(relativePosX, sizeY - relativePosY, sizeZ - relativePosZ);
-        Vector vectToBottomLeftBack = (relativePosX, relativePosY, sizeZ - relativePosZ);
+        Vector vectToBottomLeftBack = new Vector(relativePosX, relativePosY, sizeZ - relativePosZ);
         Vector vectToTopRightBack = new Vector(sizeX - relativePosX, sizeY - relativePosY, sizeZ - relativePosZ);
         Vector vectToBottomRightBack = new Vector(sizeX - relativePosX, relativePosY, sizeZ - relativePosZ);
 
         Vector vectToTopLeftFront = new Vector(relativePosX, sizeY - relativePosY, relativePosZ);
-        Vector vectToBottomLeftFront = (relativePosX, relativePosY, relativePosZ);
+        Vector vectToBottomLeftFront = relativeVect;
         Vector vectToTopRightFront = new Vector(sizeX - relativePosX, sizeY - relativePosY, relativePosZ);
         Vector vectToBottomRightFront = new Vector(sizeX - relativePosX, relativePosY, relativePosZ);
 
